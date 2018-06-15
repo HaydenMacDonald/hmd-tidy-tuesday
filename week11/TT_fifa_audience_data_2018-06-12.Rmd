@@ -30,7 +30,7 @@ palette <- c("#d73027","#f46d43","#fdae61","#fee090","#abd9e9","#4575b4")
 
 fifaplot <- fifa %>%
     filter(!is.na(tv_audience_share)) %>%
-    ggplot() + geom_point(aes(x = population_share, y = tv_audience_share, size = gdp_weighted_share, color = confederation)) + scale_x_log10() + labs(title = "FIFA World Cup 2010 Viewership", subtitle = "Percent share of Global TV audience by percent share of global populations share", x = "Log Percent Share of Global Population", y = "Percent TV Audience Share") + scale_colour_manual(name = "Confederation", values = palette) + scale_size_continuous(name = "GDP Weighted TV Audience Share (%)") + theme(plot.subtitle = element_text(vjust = 1), 
+    ggplot() + geom_point(aes(x = population_share, y = tv_audience_share, size = gdp_weighted_share, color = confederation)) + scale_x_log10() + labs(title = "FIFA World Cup 2010 Viewership", subtitle = "Percent share of global TV audience over log percent share of global population", x = "Log Percent Share of Global Population", y = "Percent TV Audience Share") + scale_colour_manual(name = "Confederation", values = palette) + scale_size_continuous(name = "GDP Weighted TV Audience Share (%)") + theme(plot.subtitle = element_text(vjust = 1), 
     plot.caption = element_text(vjust = 1), 
     axis.line = element_line(size = 0.5, 
         linetype = "solid"), axis.ticks = element_line(colour = "black"), 
