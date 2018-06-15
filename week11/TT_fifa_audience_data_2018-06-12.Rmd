@@ -1,5 +1,5 @@
 ---
-title: "Tidy Tuesday Week 11 - Fifa 2010 World Cup Audiences"
+title: "Tidy Tuesday Week 11 - FIFA 2010 World Cup Audiences"
 author: "Hayden MacDonald"
 date: "2018/06/12"
 output:
