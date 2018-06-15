@@ -1,7 +1,7 @@
 ---
-title: "[Title]"
+title: "Tidy Tuesday Week 11 - Fifa 2010 World Cup Audiences"
 author: "Hayden MacDonald"
-date: "[Current Year]"
+date: "2018/06/12"
 output:
   pdf_document: default
   html_document: default
