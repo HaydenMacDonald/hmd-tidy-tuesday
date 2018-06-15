@@ -58,7 +58,7 @@ fifaplot2 <- fifaplot + geom_text_repel(data = top10, aes(x = population_share, 
 ```
 
 ```{r}
-ggsave("FIFA World Cup 2010 Viewership.png", plot = fifaplot2, device = "png", dpi = 300, path = "C:/Users/Hayden/Downloads")
+ggsave("FIFA World Cup 2010 Viewership.png", plot = fifaplot2, device = "png", dpi = 300, path = getwd())
 ```
 
 
