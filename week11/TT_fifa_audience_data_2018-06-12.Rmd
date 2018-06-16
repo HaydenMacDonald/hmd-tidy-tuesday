@@ -51,7 +51,8 @@ top9 <- fifa %>%
 
 top9
 
-#"United Kingdom" is too long to be a tidy label
+#"United Kingdom" is too long to be a tidy labelpwd
+
 top9[6, 1] <- "UK"
 
 fifaplot2 <- fifaplot + geom_text_repel(data = top9, aes(x = population_share, y = tv_audience_share, label = country), box.padding = 1.5, point.padding = 0.6)
