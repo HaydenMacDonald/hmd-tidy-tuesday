@@ -20,7 +20,8 @@ library(ggplot2)
 
 ```{r additional libraries}
 library(fivethirtyeight)
-
+library(tidyr)
+library(ggridges)
 ```
 
 ```{r Online Data}
@@ -31,13 +32,39 @@ mconline <- fivethirtyeight::mediacloud_online_news
 mctrump <- fivethirtyeight::mediacloud_trump
 ```
 
-```{r TV Data}
-mctv <- fivethirtyeight::tv_hurricanes
-mctvnetwork <- fivethirtyeight::tv_hurricanes_by_network
-mctvstates <- fivethirtyeight::tv_states
+
+```{r Google Searches}
+#Hurricane Events
+#Harvey - Aug 25, 2017
+harvey_landfall <- google[6, ]
+
+#Irma - Sept 10, 2017
+irma_landfall <- google[22,]
+
+#Jose drops to Category 2
+jose_cat2 <- google[23,]
+#Maria - Sept 20, 2017
+maria_landfall <- google[32,]
+
+google_searches <- ggplot(google, aes(x = date)) + 
+  geom_area(aes(y = hurricane_harvey_us, fill = "lightblue", alpha = .2)) + 
+  geom_area(aes(y = hurricane_irma_us, fill = "darkblue", alpha = .2)) + 
+  geom_area(aes(y = hurricane_jose_us, fill = "red", alpha = .2)) + 
+  geom_area(aes(y = hurricane_maria_us, alpha = .2, fill = "white")) + 
+  geom_line(aes(y = hurricane_maria_us)) + 
+  geom_text_repel(data = maria_landfall, aes(x = date, y = hurricane_maria_us, label = "Maria's Landfall"), box.padding = .25, point.padding = .6) + 
+  geom_text_repel(data = harvey_landfall, aes(x = date, y = hurricane_harvey_us, label = "Harvey's Landfall"), box.padding = .5, point.padding = .6) + 
+  geom_text_repel(data = irma_landfall, aes(x = date, y = hurricane_irma_us, label = "Irma's Landfall"), box.padding = .5, point.padding = .6) + 
+  geom_text_repel(data = jose_cat2, aes(x = date, y = hurricane_jose_us, label = "Jose drops to Category 2"), box.padding = .2, point.padding = .6) + 
+  labs(title = "Google Searches for Major Hurricanes in 2017", x = "Date", y = "") + 
+  theme(legend.position = "none", axis.line = element_line(size = 0.5, linetype = "solid"), panel.grid.minor = element_line(linetype = "blank"), axis.text.y = element_blank())
+
+ggsave("Google Searches for Major Hurricanes in 2017.png", plot = google_searches, device = "png", dpi = 300, path = "C:/Users/Hayden/Documents/hmd-tidy-tuesday/week12")
 ```
 
+```{r}
 
+```
 
 
 
