@@ -43,6 +43,7 @@ irma_landfall <- google[22,]
 
 #Jose drops to Category 2
 jose_cat2 <- google[23,]
+
 #Maria - Sept 20, 2017
 maria_landfall <- google[32,]
 
