@@ -57,16 +57,47 @@ google_searches <- ggplot(google, aes(x = date)) +
   geom_text_repel(data = harvey_landfall, aes(x = date, y = hurricane_harvey_us, label = "Harvey's Landfall"), box.padding = .5, point.padding = .25) + 
   geom_text_repel(data = irma_landfall, aes(x = date, y = hurricane_irma_us, label = "Irma's Landfall"), box.padding = .5, point.padding = .25) + 
   geom_text_repel(data = jose_cat2, aes(x = date, y = hurricane_jose_us, label = "Jose drops to Category 2"), box.padding = .5, point.padding = .25) + 
+  geom_text_repel(data = jose_cat2, aes(x = date, y = hurricane_jose_us, label = "Jose drops to Category 2"), box.padding = .5, point.padding = .25) +
   labs(title = "Google Searches for Major Hurricanes in 2017", x = "Date", y = "", caption = "data: fivethirtyeight | Graphic: @HYDNMCDNLD") + 
   theme(legend.position = "none", axis.line = element_line(size = 0.5, linetype = "solid"), panel.grid.minor = element_line(linetype = "blank"), axis.text.y = element_blank())
-
-google_searches
 
 ggsave("Google Searches for Major Hurricanes in 2017.png", plot = google_searches, width = 7, height = 7, device = "png", dpi = 300, path = "C:/Users/Hayden/Documents/hmd-tidy-tuesday/week12")
 ```
 
 ```{r}
+#Events
+#Harvey landfall
+hlandfall <- mctrump[6,]
 
+#Harvey Visit
+presvisit <- mctrump[10,]
+
+#Irma landfall
+ilandfall <- mctrump[22,]
+
+#Irma Visit
+presvisit2 <- mctrump[26,]
+
+#Maria landfall
+mlandfall <- mctrump[32,]
+
+#Paper Towel Throwing
+papertowel <- mctrump[45,]
+
+trump_coverage <- ggplot(mctrump, aes(x = date)) +
+  geom_area(aes(y = puerto_rico_and_trump, fill = "red", alpha = .2)) + 
+  geom_area(aes(y = florida_and_trump, fill = "lightblue", alpha = .2)) +
+  geom_area(aes(y = texas_and_trump, fill = "white", alpha = .2)) +
+  geom_text_repel(data = mlandfall, aes(x = date, y = puerto_rico_and_trump, label = "Maria's Landfall"), box.padding = .5, point.padding = .25) + 
+  geom_text_repel(data = papertowel, aes(x = date, y = puerto_rico_and_trump, label = "Paper Towel Incident"), box.padding = .5, point.padding = .25) +
+  geom_text_repel(data = hlandfall, aes(x = date, y = texas_and_trump, label = "Harvey's Landfall"), box.padding = .5, point.padding = .25) + 
+  geom_text_repel(data = presvisit, aes(x = date, y = texas_and_trump, label = "Presidential Visit to Texas"), box.padding = .5, point.padding = .25) + 
+  geom_text_repel(data = ilandfall, aes(x = date, y = florida_and_trump, label = "Irma's Landfall"), box.padding = .5, point.padding = .25) + 
+  geom_text_repel(data = presvisit2, aes(x = date, y = florida_and_trump, label = "Presidential Visit to Florida"), box.padding = .5, point.padding = .25) + 
+  labs(title = "Number of Headlines including Major Hurricane Names AND 'Trump' in 2017", x = "Date", y = "Number of Headlines", caption = "data: fivethirtyeight | Graphic: @HYDNMCDNLD") +
+  theme(legend.position = "none", axis.line = element_line(size = 0.5, linetype = "solid"), panel.grid.minor = element_line(linetype = "blank"))
+
+ggsave("Number of Headlines including Major Hurricane Names AND Trump in 2017.png", plot = trump_coverage, width = 7, height = 7, device = "png", dpi = 300, path = "C:/Users/Hayden/Documents/hmd-tidy-tuesday/week12")
 ```
 
 
