@@ -1,0 +1,65 @@
+---
+title: "Media Coverage of Puerto Rico and Hurricane Maria"
+author: "Hayden MacDonald"
+date: "2018-06-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, echo=FALSE}
+library(formatR)
+library(knitr)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+
+library(readxl)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r additional libraries}
+library(fivethirtyeight)
+
+```
+
+```{r Online Data}
+google <- fivethirtyeight::google_trends
+mchurricanes <- fivethirtyeight::mediacloud_hurricanes
+mcstates <- fivethirtyeight::mediacloud_states
+mconline <- fivethirtyeight::mediacloud_online_news
+mctrump <- fivethirtyeight::mediacloud_trump
+```
+
+```{r TV Data}
+mctv <- fivethirtyeight::tv_hurricanes
+mctvnetwork <- fivethirtyeight::tv_hurricanes_by_network
+mctvstates <- fivethirtyeight::tv_states
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
