@@ -56,7 +56,7 @@ google_searches <- ggplot(google, aes(x = date)) +
   geom_text_repel(data = harvey_landfall, aes(x = date, y = hurricane_harvey_us, label = "Harvey's Landfall"), box.padding = .5, point.padding = .6) + 
   geom_text_repel(data = irma_landfall, aes(x = date, y = hurricane_irma_us, label = "Irma's Landfall"), box.padding = .5, point.padding = .6) + 
   geom_text_repel(data = jose_cat2, aes(x = date, y = hurricane_jose_us, label = "Jose drops to Category 2"), box.padding = .2, point.padding = .6) + 
-  labs(title = "Google Searches for Major Hurricanes in 2017", x = "Date", y = "") + 
+  labs(title = "Google Searches for Major Hurricanes in 2017", x = "Date", y = "", caption = "data: fivethirtyeight") + 
   theme(legend.position = "none", axis.line = element_line(size = 0.5, linetype = "solid"), panel.grid.minor = element_line(linetype = "blank"), axis.text.y = element_blank())
 
 ggsave("Google Searches for Major Hurricanes in 2017.png", plot = google_searches, device = "png", dpi = 300, path = "C:/Users/Hayden/Documents/hmd-tidy-tuesday/week12")
