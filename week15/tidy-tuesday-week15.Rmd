@@ -1,0 +1,58 @@
+---
+title: "[Title]"
+author: "Hayden MacDonald"
+date: "2018-07-10"
+output: github_document
+---
+
+```{r setup, echo=FALSE}
+library(formatR)
+library(knitr)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+
+library(readxl)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r import}
+beer <- read_xlsx("week15_beers.xlsx")
+glimpse(beer)
+summary(beer)
+```
+
+
+```{r tidy}
+
+```
+
+```{r visualize}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
