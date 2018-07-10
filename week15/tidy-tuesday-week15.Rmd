@@ -4,7 +4,7 @@ author: "Hayden MacDonald"
 date: "2018-07-10"
 output: github_document
 ---
-
+## Project Setup
 ```{r setup, echo=FALSE}
 library(formatR)
 library(knitr)
@@ -16,16 +16,21 @@ library(dplyr)
 library(ggplot2)
 ```
 
+## Import the data
+
 ```{r import}
 beer <- read_xlsx("week15_beers.xlsx")
 glimpse(beer)
 summary(beer)
 ```
 
+## Tidy the data
 
 ```{r tidy}
 
 ```
+
+## Visualize the data
 
 ```{r visualize}
 
