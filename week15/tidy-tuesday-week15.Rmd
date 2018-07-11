@@ -80,7 +80,7 @@ head(tidybeer_tfidf_top10, n = 25)
 
 ## Visualize
 
-```{r}
+{% highlight r %}
 beer_plot <- ggplot(tidybeer_tfidf_top10, aes(x = as.factor(rank), y = tf_idf)) + 
   geom_bar(stat = "identity", fill = "goldenrod2", alpha = 0.75) + 
   coord_flip() + 
@@ -91,7 +91,7 @@ beer_plot <- ggplot(tidybeer_tfidf_top10, aes(x = as.factor(rank), y = tf_idf)) 
   theme(axis.text.y = element_blank(), axis.ticks = element_blank())
   
 beer_plot
-```
+{% endhighlight %}
 
 
 
