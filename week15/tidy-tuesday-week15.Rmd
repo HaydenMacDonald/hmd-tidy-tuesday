@@ -86,7 +86,7 @@ beer_plot <- ggplot(tidybeer_tfidf_top10, aes(x = as.factor(rank), y = tf_idf)) 
   coord_flip() + 
   facet_wrap(~ style, ncol = 4) +
   geom_text(aes(label = word, x = rank), y = 0, hjust = 0) + 
-  labs(title = "Top TF-IDF descriptors used to name beers in selected styles", x = "") +
+  labs(title = "Top TF-IDF descriptors used to name beers in selected styles", x = "", caption = "data: CircleUp | graphic: @HYDNMCDNLD") +
   theme_classic() +
   theme(axis.text.y = element_blank(), axis.ticks = element_blank())
   
