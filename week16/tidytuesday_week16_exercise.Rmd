@@ -50,11 +50,20 @@ West_North_Central <- c("North Dakota", "South Dakota", "Minnesota", "Nebraska",
 West_South_Central <- c("Oklahoma", "Arkansas", "Louisiana", "Texas")
 East_North_Central <- c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio")
 East_South_Central <- c("Kentucky", "Tennessee", "Mississippi", "Alabama") 
-South_Atlantic <- c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", "South Carolina", "Georgia", "Florida")
+South_Atlantic <- c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", 
+                    "South Carolina", "Georgia", "Florida")
 Middle_Atlantic <- c("Pennsylvania", "New York", "New Jersey")
 New_England <- c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine")
 
-region_list <- list(Pacific = Pacific, Mountain = Mountain, West_North_Central = West_North_Central, West_South_Central = West_South_Central, East_North_Central = East_North_Central, East_South_Central = East_South_Central,  South_Atlantic = South_Atlantic, Middle_Atlantic = Middle_Atlantic, New_England = New_England)
+region_list <- list(Pacific = Pacific, 
+                    Mountain = Mountain, 
+                    West_North_Central = West_North_Central, 
+                    West_South_Central = West_South_Central, 
+                    East_North_Central = East_North_Central, 
+                    East_South_Central = East_South_Central,  
+                    South_Atlantic = South_Atlantic, 
+                    Middle_Atlantic = Middle_Atlantic, 
+                    New_England = New_England)
 
 #Create a tibble to map region onto states
 region_df <- region_list %>%
