@@ -36,6 +36,48 @@ glimpse(xdata2)
 summary(xdata2)
 ```
 
+```{r}
+Pacific <- c("California", "Oregon", "Washington")
+Mountain <- c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona")
+West_North_Central <- c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri")
+West_South_Central <- c("Oklahoma", "Arkansas", "Louisiana", "Texas")
+East_North_Central <- c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio")
+East_South_Central <- c("Kentucky", "Tennessee", "Mississippi", "Alabama") 
+South_Atlantic <- c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", "South Carolina", "Georgia", "Florida")
+Middle_Atlantic <- c("Pennsylvania", "New York", "New Jersey")
+New_England <- c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine")
+
+region_list <- list(Pacific, Mountain, West_North_Central, West_South_Central, East_North_Central, East_South_Central, South_Atlantic, Middle_Atlantic, New_England)
+```
+
+
+## Calculate differentials
+```{r}
+# States where percent of all men is greater than percent of all women
+xdata2 %>%
+    spread(group, percent) %>%
+    group_by(state) %>%
+    filter(men > women) %>%
+    mutate(diff_all = men - women, 
+           diff_working = men_working - women_working, 
+           diff_nonworking = men_nonworking - women_nonworking) %>%
+    mutate(region = case_when(state == region_list[[Pacific]] ~ "Pacific", 
+                              state == c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona") ~ "Mountain", 
+                              state == c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri") ~ "West North Central",
+                              state == c("Oklahoma", "Arkansas", "Louisiana", "Texas") ~ "West South Central",
+                              state == c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio") ~ "East North Central", 
+                              state == c("Kentucky", "Tennessee", "Mississippi", "Alabama") ~ "East South Central", 
+                              state == c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", "South Carolina", "Georgia", "Florida") ~ "South Atlantic",
+                              state == c("Pennsylvania", "New York", "New Jersey") ~ "Middle Atlantic", 
+                              state == c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine") ~ "New England")) %>%
+    gather(group, percent, -count, -state) %>%
+    filter(group == c("diff_all", "diff_working", "diff_nonworking") %>%
+    group_by(region) %>%
+    summarize()
+    ggplot(aes(x = group)) + 
+    stat_density() +
+    facet_wrap(~group)
+```
 
 
 
