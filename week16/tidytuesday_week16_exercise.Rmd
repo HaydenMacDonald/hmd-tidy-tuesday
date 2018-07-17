@@ -103,8 +103,8 @@ xplot <- ggplot(data = m, aes(x = as.factor(group), y = avg_region, fill = group
     facet_wrap(~ region) + 
     theme_classic() +
     scale_fill_manual(values = palette) +
-    labs(title = "Differential percent success between men and women across US Regions", 
-         subtitle = "", 
+    labs(title = "Differential percent success between men and women across employment status", 
+         subtitle = "Faceted by US Region", 
          caption = "data: CDC - National Health Statistics Reports | graphic: @HYDNMCDNLD", 
          x = "Employment Status", y = "Percent difference") + 
     theme(panel.background = element_rect(fill = "gray92"), 
