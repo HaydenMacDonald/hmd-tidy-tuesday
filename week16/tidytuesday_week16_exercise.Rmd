@@ -77,6 +77,17 @@ xdatam <- xdata2 %>%
     facet_wrap(~group)
 ```
 
+```{r draft}
+mutate(region = case_when(state == region_list[[Pacific]] ~ "Pacific", 
+                              state == c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona") ~ "Mountain", 
+                              state == c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri") ~ "West North Central",
+                              state == c("Oklahoma", "Arkansas", "Louisiana", "Texas") ~ "West South Central",
+                              state == c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio") ~ "East North Central", 
+                              state == c("Kentucky", "Tennessee", "Mississippi", "Alabama") ~ "East South Central", 
+                              state == c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", "South Carolina", "Georgia", "Florida") ~ "South Atlantic",
+                              state == c("Pennsylvania", "New York", "New Jersey") ~ "Middle Atlantic", 
+                              state == c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine") ~ "New England")) %>%
+```
 
 
 
