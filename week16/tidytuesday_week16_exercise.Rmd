@@ -16,18 +16,19 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(purrr)
+library(stringr)
 ```
 
 
 ## Data import
 ```{r import}
-xdata <- read_xlsx("week16_exercise.xlsx", sheet = 1, col_names = TRUE)
+xdata <- read_xlsx("week16_exercise.xlsx", sheet = 1, col_names = TRUE, range = cell_cols("B:I"))
 ```
 
 ## Data cleaning
 ```{r cleaning}
 #wide to long format
-xdata2 <- gather(xdata, group, percent, -count, -state)
+xdata2 <- gather(xdata, group, percent, -state)
 
 #convert percent to numeric, group to factor
 xdata2$percent <- as.numeric(xdata2$percent)
@@ -35,10 +36,15 @@ xdata2$group <- as.factor(xdata2$group)
 
 glimpse(xdata2)
 summary(xdata2)
+
+xdata2 <- xdata2 %>%
+  filter(!is.na(percent))
 ```
 
-```{r}
-Pacific <- c("California", "Oregon", "Washington")
+
+## Create a region df to inner join to xdata2
+```{r region}
+Pacific <- c("California", "Oregon", "Washington", "Hawaii", "Alaska")
 Mountain <- c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona")
 West_North_Central <- c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri")
 West_South_Central <- c("Oklahoma", "Arkansas", "Louisiana", "Texas")
@@ -48,56 +54,66 @@ South_Atlantic <- c("West Virginia", "Virginia", "District of Columbia", "Maryla
 Middle_Atlantic <- c("Pennsylvania", "New York", "New Jersey")
 New_England <- c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine")
 
-region_list <- list(Pacific, Mountain, West_North_Central, West_South_Central, East_North_Central, East_South_Central, South_Atlantic, Middle_Atlantic, New_England)
+region_list <- list(Pacific = Pacific, Mountain = Mountain, West_North_Central = West_North_Central, West_South_Central = West_South_Central, East_North_Central = East_North_Central, East_South_Central = East_South_Central,  South_Atlantic = South_Atlantic, Middle_Atlantic = Middle_Atlantic, New_England = New_England)
+
+#Create a tibble to map region onto states
+region_df <- region_list %>%
+     map_df(~ data_frame(state = .x), .id = "region")
+
+region_df
+```
+
+## Map region onto states
+```{r}
+xdata2 <- xdata2 %>%
+  inner_join(region_df, by = "state")
+
+xdata2$region <- str_replace_all(xdata2$region, patter = "_", replacement = " ")
+
+glimpse(xdata2)
 ```
 
 
 ## Calculate differentials
-```{r}
-xdata2$region <- sapply(xdata2$state, function(x) names(region_list)[grep(x,region_list)])
-
-# States where percent of all men is greater than percent of all women
+```{r data wrangling}
 xdatam <- xdata2 %>%
     spread(group, percent) %>%
-    group_by(state) %>%
-    filter(men > women) %>%
-    mutate(diff_all = men - women, 
-           diff_working = men_working - women_working, 
-           diff_nonworking = men_nonworking - women_nonworking)
-
-
-
-                      
-    gather(group, percent, -count, -state) %>%
-    filter(group == c("diff_all", "diff_working", "diff_nonworking") %>%
     group_by(region) %>%
-    summarize()
-    ggplot(aes(x = group)) + 
-    stat_density() +
-    facet_wrap(~group)
-```
-
-```{r draft}
-mutate(region = case_when(state == region_list[[Pacific]] ~ "Pacific", 
-                              state == c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona") ~ "Mountain", 
-                              state == c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri") ~ "West North Central",
-                              state == c("Oklahoma", "Arkansas", "Louisiana", "Texas") ~ "West South Central",
-                              state == c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio") ~ "East North Central", 
-                              state == c("Kentucky", "Tennessee", "Mississippi", "Alabama") ~ "East South Central", 
-                              state == c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", "South Carolina", "Georgia", "Florida") ~ "South Atlantic",
-                              state == c("Pennsylvania", "New York", "New Jersey") ~ "Middle Atlantic", 
-                              state == c("Conneticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine") ~ "New England")) %>%
+    mutate(All = men - women, 
+           Working = men_working - women_working, 
+           Nonworking = men_nonworking - women_nonworking)
+    
+m <- xdatam %>%
+  gather(group, percent, -state, -region) %>%
+  filter(group %in% c("All", "Working", "Nonworking")) %>%
+  group_by(region, group) %>%
+  summarize(avg_region = mean(percent, na.rm = TRUE))
 ```
 
 
+## Visualize
+```{r viz}
+library(viridis)
+palette <- viridisLite::viridis(3)
+palette
 
+# Plot
+xplot <- ggplot(data = m, aes(x = as.factor(group), y = avg_region, fill = group)) + 
+    geom_col(position = "dodge") +
+    facet_wrap(~ region) + 
+    theme_classic() +
+    scale_fill_manual(values = palette) +
+    labs(title = "Differential percent success between men and women across US Regions", 
+         subtitle = "", 
+         caption = "data: CDC - National Health Statistics Reports | graphic: @HYDNMCDNLD", 
+         x = "Employment Status", y = "Percent difference") + 
+    theme(panel.background = element_rect(fill = "gray92"), 
+          legend.title = element_blank(), 
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
+```
 
-
-
-
-
-
-
+![center](/xplot.png)
 
 
 
