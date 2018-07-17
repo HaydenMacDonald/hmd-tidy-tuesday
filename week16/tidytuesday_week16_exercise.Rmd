@@ -42,7 +42,7 @@ xdata2 <- xdata2 %>%
 ```
 
 
-## Create a region df to inner join to xdata2
+## Create a region df to join to our current data
 ```{r region}
 Pacific <- c("California", "Oregon", "Washington", "Hawaii", "Alaska")
 Mountain <- c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona")
