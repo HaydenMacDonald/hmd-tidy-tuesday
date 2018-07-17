@@ -113,7 +113,7 @@ xplot <- ggplot(data = m, aes(x = as.factor(group), y = avg_region, fill = group
           axis.ticks.x = element_blank())
 ```
 
-![center](/xplot.png)
+![center](xplot.png)
 
 
 
