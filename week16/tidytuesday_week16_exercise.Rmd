@@ -1,0 +1,59 @@
+---
+title: "[Title]"
+author: "Hayden MacDonald"
+date: "[Current Year]"
+output: github_document
+---
+
+```{r setup, echo=FALSE}
+library(formatR)
+library(knitr)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+
+## Data import
+```{r import}
+xdata <- read_xlsx("week16_exercise.xlsx", sheet = 1, col_names = TRUE)
+glimpse(xdata)
+summary(xdata)
+```
+
+## Data cleaning
+```{r cleaning}
+xdat
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
