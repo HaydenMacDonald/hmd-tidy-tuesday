@@ -21,13 +21,19 @@ library(ggplot2)
 ## Data import
 ```{r import}
 xdata <- read_xlsx("week16_exercise.xlsx", sheet = 1, col_names = TRUE)
-glimpse(xdata)
-summary(xdata)
 ```
 
 ## Data cleaning
 ```{r cleaning}
-xdat
+#wide to long format
+xdata2 <- gather(xdata, group, percent, -count, -state)
+
+#convert percent to numeric, group to factor
+xdata2$percent <- as.numeric(xdata2$percent)
+xdata2$group <- as.factor(xdata2$group)
+
+glimpse(xdata2)
+summary(xdata2)
 ```
 
 
