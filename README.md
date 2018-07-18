@@ -9,7 +9,7 @@ Files will likely include .Rmd files and any other files required to reproduce m
 
 source: FIFA, FiveThirtyEight.com
 
-![center](/week11/'FIFA World Cup 2010 Viewership.png')
+![center](/week11/FIFA-World-Cup-2010-Viewership.png')
 
 
 
@@ -17,9 +17,9 @@ source: FIFA, FiveThirtyEight.com
 
 source: FiveThirtyEight.com
 
-![center](/week12/'Google Searches for Major Hurricanes in 2017.png')
+![center](/week12/Google-Searches-for-Major-Hurricanes-in-2017.png)
 
-![center](/week12/'Number of Headlines including Major Hurricane Names and Trump in 2017.png')
+![center](/week12/Number-of-Headlines-including-Major-Hurricane-Names-and-Trump-in-2017.png')
 
 
 
