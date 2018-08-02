@@ -1,0 +1,60 @@
+---
+title: "Tidy Tuesday Week 18 - Animal Shelter Data"
+author: "Hayden MacDonald"
+date: "2018-08-02"
+output: github_document
+---
+
+```{r setup, echo=FALSE}
+library(formatR)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+
+library(readxl)
+library(dplyr)
+library(ggplot2)
+```
+
+## Load data
+
+```{r}
+anml <- read_xlsx("week18_dallas_animals.xlsx")
+```
+
+## Clean & tidy data
+
+```{r}
+
+```
+
+## Visualize
+
+```{r}
+
+```
+
+## Vector tile configuration
+
+```{r}
+
+```
+
+## New Map
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
