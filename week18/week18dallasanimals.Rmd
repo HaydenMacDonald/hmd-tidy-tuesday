@@ -68,7 +68,7 @@ ggplot() +
     theme_void()
 ```
 
-![center](/initmap.png)
+![center](initmap.png)
 
 
 ## Vector tile configuration
