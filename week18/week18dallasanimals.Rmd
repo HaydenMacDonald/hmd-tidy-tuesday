@@ -1,5 +1,5 @@
 ---
-title: "Tidy Tuesday Week 18 - Animal Shelter Data"
+title: "Tidy Tuesday Week 18 - Dallas Animal Shelter Data"
 author: "Hayden MacDonald"
 date: "2018-08-02"
 output: github_document
@@ -14,25 +14,60 @@ knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
+library(tidycensus)
+library(tigris)
+library(sf)
+library(stringr)
 ```
 
 ## Load data
+
+### Animal Shelter Data
 
 ```{r}
 anml <- read_xlsx("week18_dallas_animals.xlsx")
 ```
 
+### Dallas Census Tracts
+
+```{r}
+options(tigris_class = "sf", tigris_use_cache = TRUE)
+d_map <- tracts(state = "TX", county = "Dallas", cb = TRUE)
+```
+
+----
+
 ## Clean & tidy data
 
 ```{r}
+#Pad the census tract data with zeros before joining the data sets
+anml$census_tract <- str_pad(anml$census_tract, width = 6, side = "left", pad = "0")
 
+anml2 <- anml %>%
+     select(animal_id, animal_type, census_tract)
+
+merged <- d_map %>%
+    left_join(anml2, by = c("TRACTCE" = "census_tract"))
+
+totals <- merged %>%
+  group_by(TRACTCE) %>%
+  summarize(total = n())
 ```
 
-## Visualize
+----
+
+## Initial Map
 
 ```{r}
-
+ggplot() + 
+    geom_sf(data = totals, aes(fill = total)) +
+    scale_fill_gradientn(colours = palette, space = "Lab", na.value = "grey50", aesthetics = "fill") +
+    guides(fill = guide_legend()) +
+    coord_sf(datum = NA) + 
+    theme_void()
 ```
+
 
 ## Vector tile configuration
 
@@ -40,13 +75,15 @@ anml <- read_xlsx("week18_dallas_animals.xlsx")
 
 ```
 
+----
+
 ## New Map
 
 ```{r}
 
 ```
 
-
+----
 
 
 
