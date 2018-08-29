@@ -96,16 +96,7 @@ print(fbvis2)
 dev.off()
 ```
 
-![](/week22nfl.png)
-
-
-
-
-
-
-
-
-
+![](week22nfl.png)
 
 ----
 
