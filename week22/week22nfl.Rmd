@@ -50,17 +50,53 @@ fb2l <- fb2 %>%
 ## Visualize
 
 ```{r}
-fb2l %>%
+fbvis <- fb2l %>%
     ggplot(aes(x = game_year)) +
     geom_line(aes(y = percent_fum, group = fum_type, color = fum_type)) +
-    theme_minimal() +
     scale_color_manual(name = "Fumble Type", labels = c("Pass", "Receive", "Rush"), values = c("#003399", "#aaaabb", "#cc0033")) +
-    labs(x = "Year", y = "Percent Fumbled", title = "Percentage of fumbles per year by fumble type", subtitle = "Fumbles by passing, receiving or rushing") +
-    theme(legend.position = c(0.5,0.8), legend.direction = "horizontal")
+    labs(x = "Year", y = "Percent Fumbled", title = "Percentage of fumbles per year by fumble type", subtitle = "Fumbles by passing, receiving or rushing") + 
+    theme(axis.line = element_line(size = 0.5, linetype = "solid"), 
+          panel.grid.major = element_line(linetype = "dashed"), 
+          panel.grid.minor = element_line(linetype = "dashed"), 
+          panel.background = element_rect(linetype = "dashed"),
+          legend.position = c(0.4, 0.9),
+          legend.direction = "horizontal",
+          legend.background = element_rect("gray92"), 
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12), 
+          legend.text = element_text(size = 12), 
+          title = element_text(size = 16))
 ```
 
+----
+
+## Add Logo and Export Visualization
+
+```{r}
+library(grid)
+library(png)
+library(Cairo)
+
+#import logo
+logo <- readPNG('nfllogo.png')
+
+#insert logo
+fbvis2 <- fbvis + annotation_raster(logo, ymin = 5, ymax = 7, xmin = 2012.5, xmax = 2017.5)
 
 
+#render final image
+png(filename="week22nfl.png",
+    type="cairo",
+    units="in", 
+    width=16,      
+    height=12, 
+    pointsize=12, 
+    res=300)
+print(fbvis2)
+dev.off()
+```
+
+![](/week22nfl.png)
 
 
 
