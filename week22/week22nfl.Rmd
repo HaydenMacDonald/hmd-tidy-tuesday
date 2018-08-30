@@ -102,7 +102,7 @@ dev.off()
 
 ## Session Info
 
-`sessionInfo()`
+`r sessionInfo()`
 
 
 
