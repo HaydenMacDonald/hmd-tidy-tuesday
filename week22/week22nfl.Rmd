@@ -2,7 +2,7 @@
 title: "Tidy Tuesday - Week 22 - NFL 2000-2017 Player Data"
 author: "Hayden MacDonald"
 date: "[Current Year]"
-output: github_document
+output: rmarkdown::github_document
 ---
 
 ```{r setup, echo=FALSE}
@@ -102,7 +102,9 @@ dev.off()
 
 ## Session Info
 
-`r sessioninfo::session_info()`
+```{r, echo = FALSE} 
+sessioninfo::session_info()
+```
 
 
 
