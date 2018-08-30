@@ -43,6 +43,8 @@ fb2
 # convert data to long format
 fb2l <- fb2 %>%
   gather(fum_type, percent_fum, -game_year)
+
+fb2l
 ```
 
 ----
