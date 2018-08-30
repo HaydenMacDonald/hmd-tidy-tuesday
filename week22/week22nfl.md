@@ -3,16 +3,17 @@ Tidy Tuesday - Week 22 - NFL 2000-2017 Player Data
 Hayden MacDonald
 \[Current Year\]
 
-    ## 
-    ## Attaching package: 'dplyr'
+``` r
+library(formatR)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
 
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
 
 ------------------------------------------------------------------------
 

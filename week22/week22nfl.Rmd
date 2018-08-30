@@ -2,10 +2,10 @@
 title: "Tidy Tuesday - Week 22 - NFL 2000-2017 Player Data"
 author: "Hayden MacDonald"
 date: "[Current Year]"
-output: rmarkdown::github_document
+output: github_document
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, message = FALSE, warning = FALSE}
 library(formatR)
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
