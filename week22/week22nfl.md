@@ -1,7 +1,7 @@
 Tidy Tuesday - Week 22 - NFL 2000-2017 Player Data
 ================
 Hayden MacDonald
-\[Current Year\]
+2018-08-28
 
 ``` r
 library(formatR)
@@ -66,7 +66,24 @@ fb2
 ``` r
 # convert data to long format
 fb2l <- fb2 %>% gather(fum_type, percent_fum, -game_year)
+
+fb2l
 ```
+
+    ## # A tibble: 54 x 3
+    ##    game_year fum_type     percent_fum
+    ##        <int> <chr>              <dbl>
+    ##  1      2000 pct_rush_fum      6.58  
+    ##  2      2001 pct_rush_fum      4.07  
+    ##  3      2002 pct_rush_fum      4.34  
+    ##  4      2003 pct_rush_fum      4.51  
+    ##  5      2004 pct_rush_fum      5.05  
+    ##  6      2005 pct_rush_fum      0.0240
+    ##  7      2006 pct_rush_fum      0     
+    ##  8      2007 pct_rush_fum      0     
+    ##  9      2008 pct_rush_fum      0     
+    ## 10      2009 pct_rush_fum      4.81  
+    ## # ... with 44 more rows
 
 ------------------------------------------------------------------------
 
