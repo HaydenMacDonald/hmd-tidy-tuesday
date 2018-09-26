@@ -1,0 +1,69 @@
+---
+title: "[Untitled]"
+author: "Hayden MacDonald"
+date: "2018-09-25"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+```
+
+```{r setup}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(purrr)
+library(gsubfn)
+```
+
+```{r import rename unlist, warning = FALSE, message = FALSE}
+table_dir <- dir()
+
+aspec <- read_csv("africa_species.csv")
+max_impact <- read_csv("table_6.csv")
+
+new_rank_names <- c("inv_threat_rank", "inv_cost_rank", "inv_cost_gdp_rank", "inv_cost_src_rank")
+new_inv_names <- list("inv_threat", "inv_cost", "inv_cost_2", "inv_cost_src")
+
+data_list <- str_subset(table_dir, "^table_[0-4]\\.csv$") %>%
+    map(.f = read_csv, col_names = TRUE) %>%
+    map2(new_rank_names, ~rename(.x, !!.y := rank)) %>%
+    map2(new_inv_names, function(.x, .y) setNames(.x, gsubfn("^invasion_(.*)", .y, names(.x))))
+```                                                             
+
+```{r multi_join func}
+multi_join <- function(list_of_data, join_func, ...) {
+  require("dplyr")
+  output <- Reduce(function(x, y) {join_func(x, y, ...)}, list_of_data)
+  return(output)
+}
+```
+
+```{r merge}
+idata <- multi_join(data_list, left_join, by = "country")
+
+#reorder columns alphabetically
+(idata <- idata[, order(names(idata))])
+```
+
+```{r visualize}
+
+```
+
+
+
+
+
+
+
+
+
+
+
