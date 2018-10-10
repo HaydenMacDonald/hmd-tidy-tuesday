@@ -1,0 +1,158 @@
+---
+title: "Voter Turnout in the United States (1980 - 2014)"
+author: "Hayden MacDonald"
+date: "2018-10-10"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+```
+
+```{r setup}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+library(rvest)
+library(xml2)
+library(httr)
+library(purrr)
+```
+
+```{r warning = FALSE}
+vdata <- read_csv("voter_turnout.csv") 
+
+wdata <- read_html("https://en.wikipedia.org/wiki/List_of_U.S._states_by_historical_population")
+
+popstats <- wdata %>%
+    html_nodes("table") %>%
+    .[[5]] %>%
+    html_table()
+```
+
+```{r}
+names(popstats)[1] <- "year"
+
+#Convert popstats to long format, filter for years between 1980 & 2014
+popstats2 <- popstats %>%
+    gather(state, population, -year) %>%
+    filter(year >= 1980 & year <= 2014)
+
+#Remove comma separators and convert population to numeric    
+popstats2$population <- str_replace_all(popstats2$population, ",", "") %>%
+  as.numeric()
+
+#Convert state abbreviations to full state names
+popstats2$state <- abbr2state(popstats2$state)
+```
+
+```{r}
+#Join voting data and population data from wikipedia by year and state
+vpdata <- left_join(vdata, popstats2, by = c("year", "state"))
+```
+
+```{r}
+Pacific <- c("California", "Oregon", "Washington", "Hawaii", "Alaska")
+Mountain <- c("Nevada", "Idaho", "Montana", "Wyoming", "Utah", "Colorado", "New Mexico", "Arizona")
+West_North_Central <- c("North Dakota", "South Dakota", "Minnesota", "Nebraska", "Kansas", "Iowa", "Missouri")
+West_South_Central <- c("Oklahoma", "Arkansas", "Louisiana", "Texas")
+East_North_Central <- c("Wisconsin", "Illinois", "Indiana", "Michigan", "Ohio")
+East_South_Central <- c("Kentucky", "Tennessee", "Mississippi", "Alabama") 
+South_Atlantic <- c("West Virginia", "Virginia", "District of Columbia", "Maryland", "Delaware", "North Carolina", 
+                    "South Carolina", "Georgia", "Florida")
+Middle_Atlantic <- c("Pennsylvania", "New York", "New Jersey")
+New_England <- c("Connecticut", "Rhode Island", "Massachusetts", "New Hampshire", "Vermont", "Maine")
+
+region_list <- list(Pacific = Pacific, 
+                    Mountain = Mountain, 
+                    West_North_Central = West_North_Central, 
+                    West_South_Central = West_South_Central, 
+                    East_North_Central = East_North_Central, 
+                    East_South_Central = East_South_Central,  
+                    South_Atlantic = South_Atlantic, 
+                    Middle_Atlantic = Middle_Atlantic, 
+                    New_England = New_England)
+
+#Create a tibble to map region onto states
+region_df <- region_list %>%
+     map_df(~ data_frame(state = .x), .id = "region")
+
+region_df
+```
+
+
+```{r}
+vpdata <- vpdata %>%
+    filter(alphanumeric_state_code != 0) %>%
+    group_by(year, state) %>%
+    summarize(elig_votes_p = eligible_voters / population, 
+              delta_votes = votes / eligible_voters)
+    
+#Plot turnout and voting proportion of population by state
+vpdata %>%
+  ggplot(aes(x = year)) +
+  geom_line(aes(y = elig_votes_p)) +
+  geom_line(aes(y = delta_votes, color = "red")) +
+  facet_wrap(~state)
+```
+
+```{r}
+vpdata2 <- left_join(vpdata, region_df, by = "state")
+
+vpdata2$region <- str_replace_all(vpdata2$region, pattern = "_", replacement = " ")
+
+vpdata2 <- vpdata2 %>%
+  group_by(year, region) %>%
+  summarize(reg_elig_votes = median(elig_votes_p, na.rm = TRUE), 
+            reg_delta_votes = median(delta_votes, na.rm = TRUE))
+```
+
+```{r}
+
+#Originally, I was hoping to highlight standout years in terms of the maximum and minimum differences between turnout and eligible voters by region
+#Although, I wasn't able to get it working
+big_diff <- vpdata2 %>%
+    group_by(region) %>%
+    mutate(max_diff = max(reg_elig_votes - reg_delta_votes), 
+           min_diff = min(reg_elig_votes - reg_delta_votes)) %>%
+    filter((max_diff / reg_elig_votes) >= 0.6 | (min_diff / reg_elig_votes) <= 0.05)
+
+highlight <- vpdata2 %>%
+  group_by(region, year) %>%
+  filter(region %in% big_diff$region, year %in% big_diff$year)
+```
+
+```{r}
+vpdata2 %>%
+    ggplot(aes(x = year)) +
+    geom_point(aes(y = reg_elig_votes), color = "#003399") +
+    geom_point(aes(y = reg_delta_votes), color = "#cc0033") +
+    geom_segment(aes(xend = year, y = reg_delta_votes, yend = reg_elig_votes), color = "#aaaabb") +
+    scale_y_continuous(limits = c(0.0, 1.0)) +
+    facet_wrap(~region) +
+    theme_classic() + 
+    theme(panel.grid.major = element_line(colour = "gray92"), 
+          panel.grid.minor = element_line(colour = "gray92")) +
+    labs(x = "Year", 
+         y = "", title = "Voter Turnout in the Major US Regions (1980 - 2014)", 
+         subtitle = "Proportion of region population that is eligible to vote (blue) \nProportion of eligible voter turnout (red) \nOver year, faceted by US region", 
+         caption = "graphic: @HYDNMCDNLD | source: data.world")
+```
+
+
+
+
+
+
+
+
+
+
+
+
