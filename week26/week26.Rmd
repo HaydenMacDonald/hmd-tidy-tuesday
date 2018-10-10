@@ -39,15 +39,20 @@ data_list <- str_subset(table_dir, "^table_[0-4]\\.csv$") %>%
 ```                                                             
 
 ```{r multi_join func}
-multi_join <- function(list_of_data, join_func, ...) {
+multi_join <- function(list_of_data_frames, join_func, ...) {
   require("dplyr")
-  output <- Reduce(function(x, y) {join_func(x, y, ...)}, list_of_data)
+  output <- Reduce(function(x, y) {join_func(x, y, ...)}, list_of_data_frames)
   return(output)
 }
 ```
 
 ```{r merge}
+#Use multi_join to left_join all tibbles within data_list
 idata <- multi_join(data_list, left_join, by = "country")
+
+#Add continent column via countrycode pkg
+library(countrycode)
+idata$continent <- factor(countrycode(sourcevar = idata$country, origin = "country.name", destination = "continent"))
 
 #reorder columns alphabetically
 (idata <- idata[, order(names(idata))])
