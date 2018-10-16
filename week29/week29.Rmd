@@ -69,13 +69,14 @@ grad_ridges <- grad %>%
     mutate(majority_women = mean(ShareWomen) > 0.50) %>%
     ggplot(aes(x = Median, y = Major_category, fill = majority_women)) +
     geom_density_ridges(quantile_lines = TRUE, quantiles = c(0.25, 0.5, 0.75),
-        jittered_points = TRUE, position = "raincloud", alpha = 0.6, scale = 1.0) +
+                        jittered_points = TRUE, position = "raincloud", alpha = 0.6, scale = 1.0) +
     scale_fill_manual(values = c("#BFD3E6", "#4d004b")) +
+    guides(fill = guide_legend("Graduate Majority Women")) +
     labs(x = "Median Income",
          y = "Major Category",
          title = "Distributions of graduate median income by major category", 
          subtitle = "Each point represents the median income for a unique job title") +
-    theme_bw()
+    theme_classic()
 ```
 
 Export grad_ridges
@@ -87,7 +88,7 @@ print(grad_ridges)
 dev.off()
 ```
 
-[!](/week29.png)
+[](/week29.png)
 
 
 ##Visualize 3
