@@ -19,6 +19,7 @@ library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(Cairo)
 ```
 
 ----
@@ -80,7 +81,7 @@ grad_ridges <- grad %>%
 ```
 
 Export grad_ridges
-```{r}
+```{r export, message = FALSE}
 CairoPNG(filename = "week29.png", units = "in", width = 12, height = 12, pointsize = 12, res = 300)
 
 print(grad_ridges)
@@ -100,7 +101,8 @@ grad_wom %>%
     ggplot(aes(x = reorder(Major_category, sharewomen_mean), y = sharewomen_mean, color = Major_category)) +
     geom_point() + 
     geom_errorbar(aes(ymax = sharewomen_mean + sharewomen_sd, ymin = sharewomen_mean - sharewomen_sd)) +
-    coord_flip()
+    coord_flip() +
+    guides(color = FALSE)
 ```
 
 
