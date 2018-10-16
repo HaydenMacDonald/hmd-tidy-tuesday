@@ -88,7 +88,7 @@ print(grad_ridges)
 dev.off()
 ```
 
-[](/week29.png)
+![](/week29.png)
 
 
 ##Visualize 3
