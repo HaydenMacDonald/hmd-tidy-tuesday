@@ -1,0 +1,94 @@
+---
+title: "[Title]"
+author: "Hayden MacDonald"
+date: "[Current Year]"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+```
+
+```{r setup}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+```
+
+## Import
+
+```{r}
+movies <- read_csv("movie_profit.csv")
+```
+
+## Wrangle
+
+```{r}
+movies %<>%
+    mutate(pgain = worldwide_gross / production_budget)
+
+movies %>%
+    filter(pgain >= 10) %>%
+    group_by(distributor) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n))
+```
+
+## Visualize
+
+```{r}
+movies %>%
+    filter(pgain >= 10) %>%
+    group_by(distributor) %>%
+    summarize(n = n()) %>%
+    filter(n > 1) %>%
+    ggplot(aes(x = reorder(distributor, n), y = n)) +
+    geom_col() +
+    coord_flip()
+```
+
+## Visualize 2
+
+```{r}
+movies %>%
+    group_by(mpaa_rating) %>%
+    ggplot(aes(y = mpaa_rating, x = pgain)) +
+    geom_density_ridges(jittered_points = TRUE, position = "raincloud")
+```
+
+## Visualize 3 
+
+```{r}
+movies %>%
+    filter(pgain >= 10) %>%
+    group_by(distributor) %>%
+    ggplot(aes(x = distributor, y = pgain)) +
+    geom_boxplot() +
+    coord_flip()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
