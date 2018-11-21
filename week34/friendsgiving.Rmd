@@ -64,17 +64,28 @@ food2 %<>%
     mutate(age = factor(age, levels = c("18 - 29", "30 - 44", "45 - 59", "60+"))) %>%
     group_by(age, community_type) %>%
     mutate(percent_diff = sum(percent_friendsgiving, na.rm = TRUE)) %>%
-    mutate(percent_friendsgiving = case_when(friendsgiving == "No" ~ -percent_friendsgiving, friendsgiving == "Yes" ~ percent_friendsgiving))
+    mutate(percent_friendsgiving = case_when(friendsgiving == "No" ~ -percent_friendsgiving, 
+                                             friendsgiving == "Yes" ~ percent_friendsgiving))
 ```
 
 ```{r mirror lollipop / cleveland dot plot}
-food2 %>%
+friends <- food2 %>%
     ggplot(aes(x = age)) +
-    geom_point(aes(y = percent_friendsgiving, color = friendsgiving)) +
-    geom_segment(aes(xend = age, y = percent_friendsgiving, yend = 0, color = friendsgiving)) +
-    geom_text(aes(y = percent_friendsgiving, label = paste0(percent_friendsgiving, "%"), color = friendsgiving), vjust = -1) +
-    geom_line(aes(y = 0, group = community_type), linetype = 2) +
-    scale_y_continuous(limits = c(-50, 50), labels = abs(seq(-50, 50, 25))) +
+    geom_point(aes(y = percent_friendsgiving, 
+                   color = friendsgiving)) +
+    geom_segment(aes(xend = age, 
+                     y = percent_friendsgiving, 
+                     yend = 0, 
+                     color = friendsgiving)) +
+    geom_text(aes(y = percent_friendsgiving, 
+                  label = paste0(abs(percent_friendsgiving), "%"), 
+                  color = friendsgiving), 
+              vjust = -1) +
+    geom_line(aes(y = 0, 
+                  group = community_type), 
+              linetype = 2) +
+    scale_y_continuous(limits = c(-50, 50), 
+                       labels = abs(seq(-50, 50, 25))) +
     facet_wrap(~ community_type) +
     coord_flip() +
     theme_classic() +
@@ -87,6 +98,15 @@ food2 %>%
     scale_color_manual(values = c("#cc0033", "#4292c6"), guide = FALSE)
 ```
 
+```{r}
+library(Cairo)
+
+CairoPNG(filename = "week34.png", units = "in", width = 9, height = 9, res = 300)
+
+print(friends)
+
+dev.off()
+```
 
 
 
