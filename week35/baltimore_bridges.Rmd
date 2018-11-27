@@ -71,7 +71,7 @@ bridges %>%
 dev.off()
 ```
 
-![](/week35-baltimore-bridges.png)
+![](week35-baltimore-bridges.png)
 
 
 

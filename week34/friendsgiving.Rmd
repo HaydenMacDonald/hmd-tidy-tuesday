@@ -108,7 +108,7 @@ print(friends)
 dev.off()
 ```
 
-
+![](week34.png)
 
 
 
