@@ -54,7 +54,7 @@ fruit_sweet <- fruit[!(fruit %in% fruit_sour | fruit %in% fruit_bitter)]
 ## Sweets
 
 ```{r}
-sweets <- c("syrup", "grenadine", "sugar", "mint", "cream", )
+sweets <- c("syrup", "grenadine", "sugar", "mint", "cream")
 ```
 
 
@@ -152,19 +152,51 @@ drinks <- boston %>%
 ```
 
 ```{r}
+dark_orange <- "#d25d3c"
+light_orange <- "#fa8775"
+pink <- "#ea5f94"
+tan <- "#eecc99"
+light_grey <- "#cdcfd6"
+light_purple <- "#95a1bd"
+blue <- "#4477bb"
+```
+
+
+```{r}
+CairoPNG(filename = "week-22-cocktail-parts-ratios.png", width = 16, height = 9, units = "in", dpi = 300)
+
 drinks %>%
   pivot_longer(-c(name, drink_shaken), names_to = "type", values_to = "parts") %>%
   filter(name != "Applejack Punch") %>%
-  mutate(type = str_to_title(str_replace_all(type, "_", " ")),
-         drink_shaken = if_else(drink_shaken == 0, "Stirred", "Shaken")) %>%
+  mutate(type = str_to_title(str_replace_all(type, "parts_", "")),
+         shaken = if_else(drink_shaken == 0, "Stirred", "Shaken")) %>%
+  filter(type != "Spirit") %>%
   ggplot(aes(x = parts, y = type, fill = type)) +
-    geom_density_ridges() +
-    scale_fill_viridis_d(option = "C", alpha = 0.75) +
-    facet_wrap(~drink_shaken) +
-    guides(fill = FALSE) +
+    geom_density_ridges2(aes(point_colour = type),
+                         quantile_lines = TRUE, quantiles = c(0.25, 0.5, 0.75),
+                         jittered_points = TRUE, position = "raincloud", point_alpha = 0.3, scale = 1.0) +
+    scale_fill_manual(values = c(light_grey, dark_orange, pink, tan)) +
+    scale_discrete_manual("point_colour", values = c(light_grey, dark_orange, pink, tan)) +
+    scale_x_continuous(breaks = seq(0, 6, 1)) +
+    facet_wrap(~shaken, ncol = 1) +
+    guides(fill = FALSE,
+           point_colour = FALSE) +
     theme_light() +
+    labs(title = "How do stirred and shaken drinks differ in their parts ratios of sweet, sour, and bitter ingredients?",
+         subtitle = "Shaken drinks appear to have more extreme values in sweet/sour ingredients, whereas Stirred drinks have more extreme values in bitter/alcoholic ingredients;\nParts ratios calculated relative to the total ounces of hard liquor/spirit of the drink",
+         x = "Parts",
+         y = NULL) +
     theme(plot.background = element_rect(fill = "#fffbf0"),
-          panel.background = element_rect(fill = "#fffbf0"))
+          panel.background = element_rect(fill = "#fffbf0"),
+          strip.background = element_blank(),
+          text = element_text(family = "CMU Serif"),
+          strip.text = element_text(colour = "black", size = 12),
+          title = element_text(size = 14),
+          plot.subtitle = element_text(size = 14),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12))
+
+dev.off()
 ```
 
 
