@@ -1,0 +1,115 @@
+---
+title: "week22"
+author: "Hayden MacDonald"
+date: "25/05/2020"
+output: html_document
+---
+
+## Packages
+
+```{r}
+library(tidyverse)
+library(Cairo)
+library(glue)
+library(patchwork)
+```
+
+
+
+## Import
+
+```{r}
+boston <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv')
+```
+
+
+## Alcohol
+
+```{r}
+alcohol <- c("gin", "vodka", "rum", "rye", "whiskey", "whisky", "brandy", "cognac", "tequila", "schnapps", "jack daniel")
+
+alc_sweet <- c("cointreau", "triple sec", "apple jack", "sweet vermouth", "amaretto", "anisette")
+
+alc_sour <- c("port", "wine", "dry vermouth")
+
+alc_bitter <- c("beer", "bitter")
+
+all_alc <- c(alcohol, alc_sweet, alc_sour, alc_bitter)
+```
+
+
+## Fruit
+
+```{r}
+fruit_sour <- c("lemon", "lime", "orange", "blackberry", "blackcurrant", "blood orange", "currant", "redcurrant", "elderberry", "grape", "pomegranate", "raspberry", "tangerine", "mandarine")
+
+fruit_bitter <- c("cranberry", "grapefruit", "olive")
+
+fruit_sweet <- fruit[!(fruit %in% fruit_sour | fruit %in% fruit_bitter)]
+```
+
+
+## Sweets
+
+```{r}
+sweets <- c("syrup", "grenadine", "sugar", "mint")
+```
+
+
+
+Question: What are the most spirit:sweet and spirit:sour ratios across drinks?
+
+```{r}
+boston <- boston %>%
+            filter(!(name == "Glogg" & name == "Eggnog Supreme" & category != "Non-alcoholic Drinks" & category != "Shooters")) %>%
+            mutate(ingredient = tolower(ingredient)) %>%
+            group_by(ingredient) %>%
+            mutate(spirit = if_else(TRUE %in% str_detect(ingredient, alcohol), 1, 0),
+                   ingred_alc = if_else(TRUE %in% str_detect(ingredient, all_alc), 1, 0),
+                   ingred_sour = if_else(TRUE %in% str_detect(ingredient, fruit_sour) | TRUE %in% str_detect(ingredient, alc_sour), 1, 0),
+                   ingred_sweet = if_else(TRUE %in% str_detect(ingredient, fruit_sweet) | TRUE %in% str_detect(ingredient, alc_sweet) | TRUE %in% str_detect(ingredient, sweets), 1, 0),
+                   ingred_bitter = if_else(TRUE %in% str_detect(ingredient, fruit_bitter) | TRUE %in% str_detect(ingredient, alc_bitter), 1, 0)) %>%
+            ungroup() %>%
+            group_by(row_id) %>%
+            mutate(drink_shaken = if_else(min(ingred_alc) == 0, 1, 0)) %>%
+            ungroup()
+```
+
+```{r}
+measurements <- c("oz", "ml", "tsp", "splash", "dashes")
+
+boston <- boston %>%
+            mutate(measure = if_else(str_detect(measure, "oz"), str_replace(measure, regex("(?=oz)"), ""), measure),
+                   measure = if_else(str_detect(measure, "ml"), str_replace(measure, regex("(?=ml)"), ""), measure)) %>%
+            filter(str_detect(measure, "oz") | str_detect(measure, "ml") | str_detect(measure, "tsp") | str_detect(measure, "splash") | str_detect(measure, "dashes")) %>%
+            filter(str_detect(measure, "750-ml") == FALSE)
+
+boston <- boston %>%
+            mutate(unit = case_when(str_detect(measure, "oz") ~ "oz",
+                                       str_detect(measure, "ml") ~ "ml",
+                                       str_detect(measure, "tsp") ~ "tsp",
+                                       str_detect(measure, "splash") ~ "splash",
+                                       str_detect(measure, "dashes") ~ "dashes",
+                                       TRUE ~ NA_character_))
+
+boston <- boston %>%
+            mutate(measure = case_when(str_match(measure, "1/4") ~ ".25",
+                                       str_match(measure, "1/4") ~ "0.25",
+                                       str_match(measure, " 1/2") ~ ".5",
+                                       str_match(measure, "1/2") ~ "0.5",
+                                       str_match(measure, " 3/4") ~ ".75",
+                                       str_match(measure, "3/4") ~ "0.75"))
+                   measure = case_when(unit == "oz" ~ as.numeric(str_trim(str_replace(measure, "oz", ""), side = "both")),
+                                       unit == "ml" ~ as.numeric(str_trim(str_replace(measure, "ml", ""), side = "both"))*0.033814,
+                                       unit == "tsp" ~ as.numeric(str_trim(str_replace(measure, "tsp", ""), side = "both"))*0.166667,
+                                       unit == "splash" ~ as.numeric(str_trim(str_replace(measure, "splash", ""), side = "both"))*0.2,
+                                       unit == "dashes" ~ as.numeric(str_trim(str_replace(measure, "dashes", ""), side = "both"))*0.03125,
+                                       TRUE ~ NA_real_))
+                             
+
+
+```
+
+
+
+

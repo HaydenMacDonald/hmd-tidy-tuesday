@@ -1,0 +1,118 @@
+---
+title: "Craft Beer Names Analysis by Style"
+author: "Hayden MacDonald"
+date: "2018-07-11"
+output: github_document
+---
+## Project Setup
+```{r setup, echo=FALSE}
+library(formatR)
+library(knitr)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(tidytext)
+library(stringr)
+library(ggplot2)
+```
+
+## Import the data
+
+```{r import}
+beer <- read_xlsx("week15_beers.xlsx")
+glimpse(beer)
+summary(beer)
+```
+
+## Tidy the data
+
+```{r tidy}
+beer$style <- tolower(beer$style)
+
+tidybeer <- beer %>%
+  unnest_tokens(word, name) %>%
+  anti_join(stop_words) %>%
+  count(word, style) %>%
+  arrange(desc(n))
+
+head(tidybeer, n = 25)
+```
+
+## TF-IDF Analysis
+
+```{r td_idf}
+#Generate tf-idf scores for name words not matching style
+tidybeer_tfidf <- tidybeer %>%
+    filter(!word %in% style) %>%
+    group_by(word) %>%
+    mutate(word_total = sum(n)) %>%
+    bind_tf_idf(word, style, n) %>%
+    arrange(desc(tf_idf), desc(word_total))
+
+head(tidybeer_tfidf, n = 25)
+
+#top 16 beer styles by grand total of all words used to describe a style
+top16 <- aggregate(word_total ~ style, tidybeer_tfidf, sum) %>%
+  top_n(16, word_total)
+
+#Within those top 16 beers, find their respective top 10 words by tf-idf scores
+tidybeer_tfidf_top10 <- tidybeer_tfidf %>%
+    inner_join(top16, by = "style") %>%
+    group_by(style) %>%
+    top_n(10, wt = rank(tf_idf, ties.method = "first")) %>%
+    arrange(style, desc(tf_idf)) %>%
+    ungroup()
+
+#rename columns for clarity
+tidybeer_tfidf_top10 <- tidybeer_tfidf_top10 %>%
+    rename(word_total_style = word_total.x) %>%
+    rename(word_total_all_beers = word_total.y)
+
+#Create ranks for each word within each style
+tidybeer_tfidf_top10 <- tidybeer_tfidf_top10 %>%
+    mutate(rank = rep(10:1, 16))
+
+head(tidybeer_tfidf_top10, n = 25)
+```
+
+## Visualize
+
+```{r}
+beer_plot <- ggplot(tidybeer_tfidf_top10, aes(x = as.factor(rank), y = tf_idf)) + 
+  geom_bar(stat = "identity", fill = "goldenrod2", alpha = 0.75) + 
+  coord_flip() + 
+  facet_wrap(~ style, ncol = 4) +
+  geom_text(aes(label = word, x = rank), y = 0, hjust = 0) + 
+  labs(title = "Top TF-IDF descriptors used to name beers in selected styles", x = "", caption = "data: CircleUp | graphic: @HYDNMCDNLD") +
+  theme_classic() +
+  theme(axis.text.y = element_blank(), axis.ticks = element_blank())
+  
+beer_plot
+```
+
+![center](/week15/beer-plot.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
