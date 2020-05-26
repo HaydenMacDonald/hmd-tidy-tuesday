@@ -9,6 +9,8 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+library(ggplot2)
+library(ggridges)
 library(Cairo)
 library(glue)
 library(patchwork)
@@ -28,20 +30,20 @@ boston <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tid
 ```{r}
 alcohol <- c("gin", "vodka", "rum", "rye", "whiskey", "whisky", "brandy", "cognac", "tequila", "schnapps", "jack daniel")
 
-alc_sweet <- c("cointreau", "triple sec", "apple jack", "sweet vermouth", "amaretto", "anisette")
+alc_sweet <- c("cointreau", "triple sec", "apple jack", "amaretto", "anisette")
 
-alc_sour <- c("port", "wine", "dry vermouth")
+alc_sour <- c("port", "wine")
 
-alc_bitter <- c("beer", "bitter")
+alc_bitter <- c("beer", "bitter", "bitters", "campari", "cynar", "fernet-branca")
 
-all_alc <- c(alcohol, alc_sweet, alc_sour, alc_bitter)
+all_alc <- c(alc_sweet, alc_sour, alc_bitter, "dry vermouth", "sweet vermouth")
 ```
 
 
 ## Fruit
 
 ```{r}
-fruit_sour <- c("lemon", "lime", "orange", "blackberry", "blackcurrant", "blood orange", "currant", "redcurrant", "elderberry", "grape", "pomegranate", "raspberry", "tangerine", "mandarine")
+fruit_sour <- c("lemon", "lime", "orange", "blackberry", "blackcurrant", "blood orange", "currant", "redcurrant", "elderberry", "grape", "pomegranate", "raspberry", "tangerine", "mandarine", "sour mix")
 
 fruit_bitter <- c("cranberry", "grapefruit", "olive")
 
@@ -52,32 +54,37 @@ fruit_sweet <- fruit[!(fruit %in% fruit_sour | fruit %in% fruit_bitter)]
 ## Sweets
 
 ```{r}
-sweets <- c("syrup", "grenadine", "sugar", "mint")
+sweets <- c("syrup", "grenadine", "sugar", "mint", "cream", )
 ```
 
 
 
-Question: What are the most spirit:sweet and spirit:sour ratios across drinks?
+Question: What are the parts distributions of ?
 
 ```{r}
 boston <- boston %>%
-            filter(!(name == "Glogg" & name == "Eggnog Supreme" & category != "Non-alcoholic Drinks" & category != "Shooters")) %>%
+            filter(!(name == "Glogg" & name == "Eggnog Supreme" & name == "Bloody Scotsman" & category != "Non-alcoholic Drinks" & category != "Shooters")) %>%
             mutate(ingredient = tolower(ingredient)) %>%
             group_by(ingredient) %>%
             mutate(spirit = if_else(TRUE %in% str_detect(ingredient, alcohol), 1, 0),
                    ingred_alc = if_else(TRUE %in% str_detect(ingredient, all_alc), 1, 0),
-                   ingred_sour = if_else(TRUE %in% str_detect(ingredient, fruit_sour) | TRUE %in% str_detect(ingredient, alc_sour), 1, 0),
-                   ingred_sweet = if_else(TRUE %in% str_detect(ingredient, fruit_sweet) | TRUE %in% str_detect(ingredient, alc_sweet) | TRUE %in% str_detect(ingredient, sweets), 1, 0),
+                   ingred_sour = if_else(TRUE %in% str_detect(ingredient, fruit_sour), 1, 0),
+                   ingred_sweet = if_else(TRUE %in% str_detect(ingredient, fruit_sweet) | TRUE %in% str_detect(ingredient, sweets), 1, 0),
                    ingred_bitter = if_else(TRUE %in% str_detect(ingredient, fruit_bitter) | TRUE %in% str_detect(ingredient, alc_bitter), 1, 0)) %>%
             ungroup() %>%
+            mutate(ingred_alc = if_else(str_detect(ingredient, "bitter"), 0, ingred_alc),
+                   ingred_sour = if_else(str_detect(ingredient, "bitter"), 0, ingred_sour),
+                   ingred_sweet = if_else(str_detect(ingredient, "bitter"), 0, ingred_sweet)) %>%
             group_by(row_id) %>%
-            mutate(drink_shaken = if_else(min(ingred_alc) == 0, 1, 0)) %>%
+            mutate(drink_shaken = if_else((sum(ingred_alc, na.rm = TRUE) + sum(spirit, na.rm = TRUE) + sum(ingred_bitter, na.rm = TRUE) >= 0.66*n()) 
+                                          & sum(str_detect(ingredient, fruit_sour), na.rm = TRUE) == 0, 0, 1)) %>%
             ungroup()
 ```
 
-```{r}
-measurements <- c("oz", "ml", "tsp", "splash", "dashes")
 
+## Measure cleaning
+
+```{r}
 boston <- boston %>%
             mutate(measure = if_else(str_detect(measure, "oz"), str_replace(measure, regex("(?=oz)"), ""), measure),
                    measure = if_else(str_detect(measure, "ml"), str_replace(measure, regex("(?=ml)"), ""), measure)) %>%
@@ -93,22 +100,95 @@ boston <- boston %>%
                                        TRUE ~ NA_character_))
 
 boston <- boston %>%
-            mutate(measure = case_when(str_match(measure, "1/4") ~ ".25",
-                                       str_match(measure, "1/4") ~ "0.25",
-                                       str_match(measure, " 1/2") ~ ".5",
-                                       str_match(measure, "1/2") ~ "0.5",
-                                       str_match(measure, " 3/4") ~ ".75",
-                                       str_match(measure, "3/4") ~ "0.75"))
+            mutate(measure = case_when(str_detect(measure, "2 1/2") ~ "2.5",
+                                       str_detect(measure, "2 1/4") ~ "2.25",
+                                       str_detect(measure, "1 2/3") ~ "1.66",
+                                       str_detect(measure, "1 1/4") ~ "1.25",
+                                       str_detect(measure, "1/4") ~ "0.25",
+                                       str_detect(measure, "1/3") ~ "0.33",
+                                       str_detect(measure, "1 1/2") ~ "1.5",
+                                       str_detect(measure, "1/2") ~ "0.5",
+                                       str_detect(measure, "1 3/4") ~ "1.75",
+                                       str_detect(measure, "3/4") ~ "0.75",
+                                       TRUE ~ measure),
                    measure = case_when(unit == "oz" ~ as.numeric(str_trim(str_replace(measure, "oz", ""), side = "both")),
                                        unit == "ml" ~ as.numeric(str_trim(str_replace(measure, "ml", ""), side = "both"))*0.033814,
                                        unit == "tsp" ~ as.numeric(str_trim(str_replace(measure, "tsp", ""), side = "both"))*0.166667,
-                                       unit == "splash" ~ as.numeric(str_trim(str_replace(measure, "splash", ""), side = "both"))*0.2,
+                                       unit == "splash" ~ 0.2,
                                        unit == "dashes" ~ as.numeric(str_trim(str_replace(measure, "dashes", ""), side = "both"))*0.03125,
                                        TRUE ~ NA_real_))
-                             
-
-
 ```
+
+
+## Ratios
+
+```{r}
+## Realized that I messed up and that it was actually better to have the descriptors as text, not as booleans
+boston <- boston %>%
+            select(-unit) %>%
+            pivot_longer(-c(name, category, row_id, ingredient_number, ingredient, measure, drink_shaken), names_to = "type", values_to = "value") %>%
+            group_by(name, ingredient_number) %>%
+            slice(which.max(value)) %>%
+            ungroup() %>%
+            mutate(type = str_replace_all(type, "ingred_", ""),
+                   type = str_replace_all(type, "alc", "alcoholic")) %>%
+            select(-value) %>%
+            arrange(row_id)
+```
+
+```{r}
+drinks <- boston %>%
+            group_by(name, type) %>%
+            summarize(total_oz = sum(measure, na.rm = TRUE),
+                      drink_shaken = max(drink_shaken, na.rm = TRUE)) %>%
+            pivot_wider(names_from = type, values_from = total_oz) %>%
+            group_by(name) %>%
+            summarize(drink_shaken = max(drink_shaken, na.rm = TRUE),
+                      parts_spirit = 1,
+                      parts_alcoholic = alcoholic / spirit,
+                      parts_sweet = sweet / spirit,
+                      parts_sour = sour / spirit,
+                      parts_bitter = bitter / spirit)
+```
+
+```{r}
+drinks %>%
+  pivot_longer(-c(name, drink_shaken), names_to = "type", values_to = "parts") %>%
+  filter(name != "Applejack Punch") %>%
+  mutate(type = str_to_title(str_replace_all(type, "_", " ")),
+         drink_shaken = if_else(drink_shaken == 0, "Stirred", "Shaken")) %>%
+  ggplot(aes(x = parts, y = type, fill = type)) +
+    geom_density_ridges() +
+    scale_fill_viridis_d(option = "C", alpha = 0.75) +
+    facet_wrap(~drink_shaken) +
+    guides(fill = FALSE) +
+    theme_light() +
+    theme(plot.background = element_rect(fill = "#fffbf0"),
+          panel.background = element_rect(fill = "#fffbf0"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
