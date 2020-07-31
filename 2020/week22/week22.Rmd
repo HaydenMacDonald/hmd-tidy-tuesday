@@ -182,8 +182,8 @@ drinks %>%
     guides(fill = FALSE,
            point_colour = FALSE) +
     theme_light() +
-    labs(title = "How do stirred and shaken drinks differ in their parts ratios of sweet, sour, and bitter ingredients?",
-         subtitle = "Shaken drinks appear to have more extreme values in sweet/sour ingredients, whereas Stirred drinks have more extreme values in bitter/alcoholic ingredients;\nParts ratios calculated relative to the total ounces of hard liquor/spirit of the drink",
+    labs(title = "How do stirred and shaken drinks differ in their parts ratios of sweet, sour, bitter, and alcoholic ingredients?",
+         subtitle = "Shaken drinks seem to have higher proportions of sweet/sour ingredients, whereas Stirred drinks seem to have higher proportions of bitter/alcoholic ingredients;\nParts ratios calculated relative to the total ounces of hard liquor/spirit of the drink",
          x = "Parts",
          y = NULL) +
     theme(plot.background = element_rect(fill = "#fffbf0"),
